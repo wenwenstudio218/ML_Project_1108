@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block head %}
+{{ super() }}
+<title>隨機森林 - 離職預測</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/prediction.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>隨機森林 (Random Forest)</h1>
+    <p>調整下方的壓力特徵滑桿，即時預測員工的離職傾向機率。</p>
+</div>
+
+<div class="content-wrapper">
+    <div class="controls-panel">
+        <h2>特徵控制</h2>
+
+        <div class="slider-group">
+            <label for="feature1">工作量壓力 (1-5)</label>
+            <input type="range" id="feature1" class="slider" min="1" max="5" value="3" step="1">
+            <span id="feature1-value">3</span>
+        </div>
+
+        <div class="slider-group">
+            <label for="feature2">組織風氣-申訴管道壓力 (1-5)</label>
+            <input type="range" id="feature2" class="slider" min="1" max="5" value="3" step="1">
+            <span id="feature2-value">3</span>
+        </div>
+
+        <div class="prediction-output">
+            <h3>預測離職傾向</h3>
+            <div class="probability-display">
+                <div class="probability-bar">
+                    <div id="probability-fill"></div>
+                </div>
+                <span id="prediction-value">...%</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <h2>特徵分佈散佈圖 (200筆隨機樣本)</h2>
+        <canvas id="scatterChart"></canvas>
+        <div class="chart-legend">
+            <span class="legend-item legend-no">■ 未離職</span>
+            <span class="legend-item legend-yes">■ 離職</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block code %}
+<script src="{{ url_for('static', filename='vendor/chart.js/chart.umd.js') }}"></script>
+<script src="{{ url_for('static', filename='js/random_forest.js') }}"></script>
+{% endblock%}

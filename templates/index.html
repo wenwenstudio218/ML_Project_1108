@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block head %}
+{{ super() }}
+<title>{% block title %}職能發展學院 - 離職預測{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <h1>探索員工離職傾向</h1>
+    <p class="lead">使用機器學習預測潛在的離職風險</p>
+    <p class="subtitle">透過邏輯斯回歸與隨機森林模型，深入理解關鍵壓力特徵</p>
+</div>
+<div class="algorithm-section">
+    <h2>模型介紹與動機</h2>
+    <p class="lead" style="text-align: left; max-width: 900px; margin: 20px auto;">
+        本專案旨在建立一個能夠預測員工離職傾向的模型。在現代企業管理中，高員工流動率會帶來巨大的招聘與培訓成本，並可能導致團隊知識斷層。
+        透過分析員工的壓力感知（特別是工作量壓力與組織風氣壓力），我們期望能及早識別高風險群體，從而使管理層能採取針對性措施，改善工作環境，提升員工留存率。
+    </p>
+
+    <div class="algorithm-card">
+        <div class="card-header">
+            <h3>邏輯斯回歸 (Logistic Regression)</h3>
+            <span class="badge">監督式學習</span>
+        </div>
+        <div class="card-body">
+            <h4>演算法原理</h4>
+            <p>邏輯斯回歸是一種廣泛用於二元分類問題的統計模型。它透過 Sigmoid 函數將線性迴歸的連續預測值壓縮到 0 到 1 之間，使其代表「發生某一事件的機率」（例如：離職機率）。</p>
+
+            <h4>優缺點</h4>
+            <div class="pros-cons">
+                <div class="pros">
+                    <strong>優點：</strong>
+                    <ul>
+                        <li>模型簡單，易於解釋，可解釋性強。</li>
+                        <li>計算效率高，訓練速度快。</li>
+                        <li>輸出結果為機率，直觀易懂。</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <strong>缺點：</strong>
+                    <ul>
+                        <li>僅能捕捉線性關係。</li>
+                        <li>對特徵工程和特徵選擇較為敏感。</li>
+                        <li>處理大量特徵或非線性問題時效果可能不佳。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h4>本專案應用</h4>
+            <p>使用「工作量壓力」與「組織風氣-申訴管道壓力」兩個特徵，建立一個輕量級、易於解釋的預測模型。您可以透過互動介面調整這兩個壓力指標，即時查看模型預測的離職機率。</p>
+            <div class="action-button">
+                <a href="{{ url_for('logistic.logistic_index') }}" class="btn-primary">立即體驗邏輯斯回歸 →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="algorithm-card">
+        <div class="card-header">
+            <h3>隨機森林 (Random Forest)</h3>
+            <span class="badge">監督式學習</span>
+        </div>
+        <div class="card-body">
+            <h4>演算法原理</h4>
+            <p>隨機森林是一種基於「決策樹」的集成學習方法。它透過建立多棵各自獨立的決策樹，並在預測時綜合所有樹的結果（分類問題中採投票制），來做出最終決斷。樹的建立過程中引入了特徵隨機抽樣，以增加模型的多樣性，有效防止過度擬合。
+            </p>
+
+            <h4>優缺點</h4>
+            <div class="pros-cons">
+                <div class="pros">
+                    <strong>優點：</strong>
+                    <ul>
+                        <li>通常具有很高的預測準確性。</li>
+                        <li>能有效處理非線性關係。</li>
+                        <li>對異常值和噪聲有較好的容忍度。</li>
+                        <li>不易過度擬合。</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <strong>缺點：</strong>
+                    <ul>
+                        <li>模型可解釋性較差（黑盒子）。</li>
+                        <li>訓練和預測所需時間較長。</li>
+                        <li>模型體積較大。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h4>本專案應用</h4>
+            <p>同樣使用「工作量壓力」與「組織風氣-申訴管道壓力」特徵，隨機森林模型將展示其捕捉複雜非線性關係的能力。您可以比較它與邏輯斯回歸在相同輸入下的預測結果有何不同。</p>
+
+            <div class="action-button">
+                <a href="{{ url_for('rf.rf_index') }}" class="btn-primary">立即體驗隨機森林 →</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block code %}
+{% endblock%}

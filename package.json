@@ -1,0 +1,24 @@
+{
+  "name": "ml_project_1108",
+  "version": "1.0.0",
+  "description": "機器學習專題_工作壓力對離職傾向預測",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wenwenstudio218/ML_Project_1108.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/wenwenstudio218/ML_Project_1108/issues"
+  },
+  "homepage": "https://github.com/wenwenstudio218/ML_Project_1108#readme",
+  "dependencies": {
+    "chart.js": "^4.5.1"
+  }
+}
