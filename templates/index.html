@@ -2,7 +2,6 @@
 
 {% block head %}
 {{ super() }}
-<title>{% block title %}職能發展學院 - 離職預測{% endblock %}</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 {% endblock %}
 
@@ -10,7 +9,7 @@
 <div class="hero-section">
     <h1>探索員工離職傾向</h1>
     <p class="lead">使用機器學習預測潛在的離職風險</p>
-    <p class="subtitle">透過邏輯斯回歸與隨機森林模型，深入理解關鍵壓力特徵</p>
+    <p class="subtitle">透過邏輯斯迴歸與隨機森林模型，深入理解關鍵壓力特徵</p>
 </div>
 <div class="algorithm-section">
     <h2>模型介紹與動機</h2>
@@ -21,12 +20,12 @@
 
     <div class="algorithm-card">
         <div class="card-header">
-            <h3>邏輯斯回歸 (Logistic Regression)</h3>
+            <h3>邏輯斯迴歸 (Logistic Regression)</h3>
             <span class="badge">監督式學習</span>
         </div>
         <div class="card-body">
             <h4>演算法原理</h4>
-            <p>邏輯斯回歸是一種廣泛用於二元分類問題的統計模型。它透過 Sigmoid 函數將線性迴歸的連續預測值壓縮到 0 到 1 之間，使其代表「發生某一事件的機率」（例如：離職機率）。</p>
+            <p>邏輯斯迴歸是一種廣泛用於二元分類問題的統計模型。它透過 Sigmoid 函數將線性迴歸的連續預測值壓縮到 0 到 1 之間，使其代表「發生某一事件的機率」（例如：離職機率）。</p>
 
             <h4>優缺點</h4>
             <div class="pros-cons">
@@ -51,7 +50,7 @@
             <h4>本專案應用</h4>
             <p>使用「工作量壓力」與「組織風氣-申訴管道壓力」兩個特徵，建立一個輕量級、易於解釋的預測模型。您可以透過互動介面調整這兩個壓力指標，即時查看模型預測的離職機率。</p>
             <div class="action-button">
-                <a href="{{ url_for('logistic.logistic_index') }}" class="btn-primary">立即體驗邏輯斯回歸 →</a>
+                <a href="{{ url_for('logistic.logistic_index') }}" class="btn-primary">立即體驗邏輯斯迴歸 →</a>
             </div>
         </div>
     </div>
@@ -88,7 +87,7 @@
             </div>
 
             <h4>本專案應用</h4>
-            <p>同樣使用「工作量壓力」與「組織風氣-申訴管道壓力」特徵，隨機森林模型將展示其捕捉複雜非線性關係的能力。您可以比較它與邏輯斯回歸在相同輸入下的預測結果有何不同。</p>
+            <p>同樣使用「工作量壓力」與「組織風氣-申訴管道壓力」特徵，隨機森林模型將展示其捕捉複雜非線性關係的能力。您可以比較它與邏輯斯迴歸在相同輸入下的預測結果有何不同。</p>
 
             <div class="action-button">
                 <a href="{{ url_for('rf.rf_index') }}" class="btn-primary">立即體驗隨機森林 →</a>

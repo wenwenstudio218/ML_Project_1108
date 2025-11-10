@@ -5,14 +5,14 @@
     {% block head %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}離職預測模型{% endblock %}</title>
+    <title>{% block title %}離職傾向預測模型{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     {% endblock %}
 </head>
 
 <body>
     <nav>
-        <h1 class="nav-title">員工離職傾向預測模型</h1>
+        <h1 class="nav-title">工作壓力對離職傾向預測專案</h1>
 
         <button id="menu-toggle" class="menu-toggle" aria-label="選單">
             <span></span>
@@ -22,7 +22,7 @@
         <div class="nav-links">
             <a href="{{ url_for('index')}}" {% if request.endpoint=='index' %}class="activate" {% endif %}>專案首頁</a>
             <a href="{{ url_for('logistic.logistic_index')}}" {% if request.endpoint=='logistic.logistic_index'
-                %}class="activate" {% endif %}>邏輯斯回歸</a>
+                %}class="activate" {% endif %}>邏輯斯迴歸</a>
             <a href="{{ url_for('rf.rf_index')}}" {% if request.endpoint=='rf.rf_index' %}class="activate" {% endif
                 %}>隨機森林</a>
         </div>

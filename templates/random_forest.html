@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}隨機森林 - 離職預測{% endblock %}
+
 {% block head %}
 {{ super() }}
-<title>隨機森林 - 離職預測</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/prediction.css') }}">
 {% endblock %}
 
@@ -57,8 +58,8 @@
     <h2>特徵分佈散佈圖 (200筆隨機樣本)</h2>
     <div class="chart-controls">
         <button id="chart-filter-all" class="chart-filter-btn active">全部顯示</button>
-        <button id="chart-filter-no" class="chart-filter-btn">僅未離職 (藍)</button>
-        <button id="chart-filter-yes" class="chart-filter-btn">僅離職 (紅)</button>
+        <button id="chart-filter-no" class="chart-filter-btn">僅未離職</button>
+        <button id="chart-filter-yes" class="chart-filter-btn">僅離職</button>
     </div>
     <div class="chart-canvas-wrapper">
         <canvas id="scatterChart"></canvas>
@@ -71,29 +72,68 @@
 
 <div class="info-blocks-wrapper">
     <div class="info-card card-style">
-        <h3>模型評估指標 (測試集)</h3>
-        <ul id="model-evaluation-list">
-            <li><strong>召回率 (Recall):</strong> <span id="metric-recall">載入中...</span></li>
-            <li><strong>F1-Score:</strong> <span id="metric-f1">載入中...</span></li>
-            <li><strong>AUC 分數:</strong> <span id="metric-auc">載入中...</span></li>
-        </ul>
+        <h3>模型評估指標</h3>
+
+        <div class="info-grid" id="model-evaluation-list">
+
+            <div class="info-item">
+                <span class="info-item-label">召回率 (Recall)</span>
+                <span class="info-item-value" id="metric-recall">載入中...</span>
+            </div>
+
+            <div class="info-item">
+                <span class="info-item-label">F1-Score</span>
+                <span class="info-item-value" id="metric-f1">載入中...</span>
+            </div>
+
+            <div class="info-item">
+                <span class="info-item-label">AUC 分數</span>
+                <span class="info-item-value" id="metric-auc">載入中...</span>
+            </div>
+
+        </div>
     </div>
 
     <div class="info-card card-style">
         <h3>模型資訊</h3>
-        <ul id="model-info-list">
-            <li><strong>資料集:</strong> <span id="info-dataset-name">載入中...</span></li>
-            <li><strong>總樣本數:</strong> <span id="info-total-samples">載入中...</span></li>
-            <li><strong>訓練集大小:</strong> <span id="info-train-size">載入中...</span></li>
-            <li><strong>測試集大小:</strong> <span id="info-test-size">載入中...</span></li>
-            <li><strong>預測目標:</strong> <span id="info-target">載入中...</span></li>
-        </ul>
+
+        <div class="info-grid" id="model-info-list">
+
+            <div class="info-item">
+                <span class="info-item-label">資料集</span>
+                <span class="info-item-value" id="info-dataset-name">載入中...</span>
+            </div>
+
+            <div class="info-item">
+                <span class="info-item-label">總樣本數</span>
+                <span class="info-item-value" id="info-total-samples">載入中...</span>
+            </div>
+
+            <div class="info-item">
+                <span class="info-item-label">訓練集大小</span>
+                <span class="info-item-value" id="info-train-size">載入中...</span>
+            </div>
+
+            <div class="info-item">
+                <span class="info-item-label">測試集大小</span>
+                <span class="info-item-value" id="info-test-size">載入中...</span>
+            </div>
+
+            <div class="info-item">
+                <span class="info-item-label">預測目標</span>
+                <span class="info-item-value" id="info-target">載入中...</span>
+            </div>
+
+        </div>
     </div>
 
     <div class="info-card card-style">
         <h3 id="chart-info-title">圖表說明</h3>
         <p id="chart-info-description">載入中...</p>
     </div>
+</div>
+
+    
 </div>
 
 {% endblock %}
