@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const chartCtx = document.getElementById('scatterChart').getContext('2d');
     let scatterChart;
+    let originalDataNo = [];
+    let originalDataYes = [];
 
     // --- 2. 更新預測函式 ---
     async function updatePrediction() {
@@ -90,10 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const chartData = await response.json();
 
             const dataPoints = chartData.data;
-            const turnoverNo = dataPoints.filter(d => d.turnover_numeric === 0)
+
+            originalDataNo = dataPoints.filter(d => d.turnover_numeric === 0)
                 .map(d => ({ x: d.stress_workload_amount, y: d.stress_org_climate_grievance }));
 
-            const turnoverYes = dataPoints.filter(d => d.turnover_numeric === 1)
+            originalDataYes = dataPoints.filter(d => d.turnover_numeric === 1)
                 .map(d => ({ x: d.stress_workload_amount, y: d.stress_org_climate_grievance }));
 
             scatterChart = new Chart(chartCtx, {
@@ -102,14 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     datasets: [
                         {
                             label: '未離職 (0)',
-                            data: turnoverNo,
+                            data: originalDataNo,
                             backgroundColor: 'rgba(0, 123, 255, 0.6)',
                             borderColor: 'rgba(0, 123, 255, 1)',
                             pointRadius: 5
                         },
                         {
                             label: '離職 (1)',
-                            data: turnoverYes,
+                            data: originalDataYes,
                             backgroundColor: 'rgba(220, 53, 69, 0.6)',
                             borderColor: 'rgba(220, 53, 69, 1)',
                             pointRadius: 5
@@ -152,6 +155,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- 5. 【要求 2】(新增) 設定圖表過濾按鈕 ---
+    function setupChartFilters() {
+        const btnAll = document.getElementById('chart-filter-all');
+        const btnNo = document.getElementById('chart-filter-no');
+        const btnYes = document.getElementById('chart-filter-yes');
+        const allBtns = [btnAll, btnNo, btnYes];
+
+        // 幫所有按鈕加上 .active 管理
+        allBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                allBtns.forEach(b => b.classList.remove('active')); // 移除所有
+                btn.classList.add('active'); // 加上當前
+
+                // 更新圖表
+                updateChartVisibility(btn.id);
+            });
+        });
+    }
+
+    // --- 6. 【要求 2】(新增) 更新圖表可見度函式 ---
+    function updateChartVisibility(filterId) {
+        if (!scatterChart) return;
+
+        switch (filterId) {
+            case 'chart-filter-all':
+                scatterChart.data.datasets[0].data = originalDataNo;
+                scatterChart.data.datasets[1].data = originalDataYes;
+                break;
+            case 'chart-filter-no':
+                scatterChart.data.datasets[0].data = originalDataNo;
+                scatterChart.data.datasets[1].data = []; // 隱藏紅點
+                break;
+            case 'chart-filter-yes':
+                scatterChart.data.datasets[0].data = []; // 隱藏藍點
+                scatterChart.data.datasets[1].data = originalDataYes;
+                break;
+        }
+
+        scatterChart.update(); // 重新繪製圖表
+    }
+
     // --- 5. 【要求 3】(新增) 載入模型資訊 ---
     async function loadModelInfo() {
         try {
@@ -188,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 6. 初始化 ---
     setupSliders();
     drawChart();
+    setupChartFilters();
     updatePrediction(); // 頁面載入時立即預測一次
     loadModelInfo(); // 【要求 3】頁面載入時取得資訊
 });
