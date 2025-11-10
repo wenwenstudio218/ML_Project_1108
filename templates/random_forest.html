@@ -37,13 +37,13 @@
     <div class="results-panel card-style">
         <h2 class="panel-title">即時預測結果</h2>
 
-        <div class="percentage-display">
-            <span id="risk-percentage">...%</span>
-            <p>離職傾向機率</p>
-        </div>
-
-        <div class="progress-bar-container">
-            <div id="risk-progress" class="progress-bar-fill"></div>
+        <div class="circle-percentage-container">
+            <div class="circle-progress" id="circle-progress">
+                <div class="circle-progress-inner">
+                    <span id="risk-percentage-value">...</span>%
+                </div>
+            </div>
+            <p class="circle-percentage-label">離職傾向機率</p>
         </div>
 
         <div class="risk-interpretation">
@@ -67,33 +67,27 @@
 <div class="info-blocks-wrapper">
     <div class="info-card card-style">
         <h3>模型評估指標 (測試集)</h3>
-        <ul>
-            <li><strong>召回率 (Recall):</strong> 0.80 (範例)</li>
-            <li><strong>F1-Score:</strong> 0.78 (範例)</li>
-            <li><strong>AUC 分數:</strong> 0.92 (範例)</li>
+        <ul id="model-evaluation-list">
+            <li><strong>召回率 (Recall):</strong> <span id="metric-recall">載入中...</span></li>
+            <li><strong>F1-Score:</strong> <span id="metric-f1">載入中...</span></li>
+            <li><strong>AUC 分數:</strong> <span id="metric-auc">載入中...</span></li>
         </ul>
     </div>
 
     <div class="info-card card-style">
         <h3>模型資訊</h3>
-        <ul>
-            <li><strong>資料集:</strong> 北北桃地區員工壓力調查</li>
-            <li><strong>總樣本數:</strong> 1500 (範例)</li>
-            <li><strong>訓練集大小:</strong> 1200 (範例)</li>
-            <li><strong>測試集大小:</strong> 300 (範例)</li>
-            <li><strong>預測目標:</strong> 離職傾向 (turnover_intention)</li>
+        <ul id="model-info-list">
+            <li><strong>資料集:</strong> <span id="info-dataset-name">載入中...</span></li>
+            <li><strong>總樣本數:</strong> <span id="info-total-samples">載入中...</span></li>
+            <li><strong>訓練集大小:</strong> <span id="info-train-size">載入中...</span></li>
+            <li><strong>測試集大小:</strong> <span id="info-test-size">載入中...</span></li>
+            <li><strong>預測目標:</strong> <span id="info-target">載入中...</span></li>
         </ul>
     </div>
 
     <div class="info-card card-style">
-        <h3>圖表說明</h3>
-        <p>
-            此散佈圖展示了「工作量壓力」(X軸) 與「組織風氣壓力」(Y軸) 之間的關係。
-            每個點代表一個隨機抽樣的員工：
-            <span class="legend-no">藍點</span>代表無離職傾向，
-            <span class="legend-yes">紅點</span>代表有離職傾向。
-            您可以觀察兩類群體在壓力特徵上的分佈差異。
-        </p>
+        <h3 id="chart-info-title">圖表說明</h3>
+        <p id="chart-info-description">載入中...</p>
     </div>
 </div>
 

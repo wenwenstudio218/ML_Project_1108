@@ -2,8 +2,9 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // *** 唯一的修改 ***
-    const PREDICT_API_URL = '/rf/predict';
-    const CHART_DATA_URL = '/rf/chart-data';
+    const PREDICT_API_URL = '/rf/predict'; // (不同)
+    const CHART_DATA_URL = '/rf/chart-data'; // (不同)
+    const INFO_API_URL = '/rf/info'; // (不同)
     // *****************
 
     // --- 1. 更新 DOM 元素選擇器 ---
@@ -13,8 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const slider2Value = document.getElementById('feature2-value');
 
     // (新) 預測結果的元素
-    const riskPercentage = document.getElementById('risk-percentage');
-    const riskProgress = document.getElementById('risk-progress');
+    const circleProgress = document.getElementById('circle-progress');
+    const riskPercentageValue = document.getElementById('risk-percentage-value');
     const riskLabel = document.getElementById('risk-label');
     const riskInterpretation = document.getElementById('risk-interpretation');
 
@@ -33,33 +34,36 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             const prob = data.prediction_probability; // 假設回傳 0-100
 
-            // (新) 更新 UI (仿造 index.html 參考檔案)
-            riskPercentage.textContent = `${prob.toFixed(1)}%`;
-            riskProgress.style.width = `${prob}%`;
+            // 【要求 2】更新圓形圖
+            // 1. 更新 CSS 變數 --p (驅動圓環)
+            circleProgress.style.setProperty('--p', prob.toFixed(1));
+            // 2. 更新圓心數字 (取整數)
+            riskPercentageValue.textContent = prob.toFixed(0);
 
-            // 根據機率更新顏色和文字
+            let color, label, interpretation;
+
             if (prob >= 70) {
-                // 高風險 (紅色)
-                riskPercentage.style.color = '#dc3545';
-                riskProgress.style.backgroundColor = '#dc3545';
-                riskLabel.style.color = '#dc3545';
-                riskLabel.textContent = "高風險";
-                riskInterpretation.textContent = "建議立即進行關懷訪談";
+                color = '#dc3545'; // Red
+                label = "高風險";
+                interpretation = "建議立即進行關懷訪談";
             } else if (prob >= 40) {
-                // 中度風險 (黃色)
-                riskPercentage.style.color = '#ffc107';
-                riskProgress.style.backgroundColor = '#ffc107';
-                riskLabel.style.color = '#ffc107';
-                riskLabel.textContent = "中度風險";
-                riskInterpretation.textContent = "建議列入觀察名單";
+                color = '#ffc107'; // Yellow
+                label = "中度風險";
+                interpretation = "建議列入觀察名單";
             } else {
-                // 低風險 (綠色)
-                riskPercentage.style.color = '#28a745';
-                riskProgress.style.backgroundColor = '#28a745';
-                riskLabel.style.color = '#28a745';
-                riskLabel.textContent = "低風險";
-                riskInterpretation.textContent = "目前狀態穩定";
+                color = '#28a745'; // Green
+                label = "低風險";
+                interpretation = "目前狀態穩定";
             }
+
+            // 【要求 2】更新圓形圖顏色
+            circleProgress.style.setProperty('--c', color);
+            circleProgress.querySelector('.circle-progress-inner').style.color = color;
+
+            // 更新文字
+            riskLabel.style.color = color;
+            riskLabel.textContent = label;
+            riskInterpretation.textContent = interpretation;
 
         } catch (error) {
             console.error('Fetch error:', error);
@@ -150,8 +154,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 5. 初始化 ---
+    // --- 5. 【要求 3】(新增) 載入模型資訊 ---
+    async function loadModelInfo() {
+        try {
+            const response = await fetch(INFO_API_URL);
+            if (!response.ok) throw new Error('Info API response was not ok');
+            const info = await response.json();
+
+            // 填充評估指標
+            document.getElementById('metric-recall').textContent = info.evaluation.recall;
+            document.getElementById('metric-f1').textContent = info.evaluation.f1_score;
+            document.getElementById('metric-auc').textContent = info.evaluation.auc;
+
+            // 填充模型資訊
+            document.getElementById('info-dataset-name').textContent = info.dataset.name;
+            document.getElementById('info-total-samples').textContent = info.dataset.total_samples;
+            document.getElementById('info-train-size').textContent = info.dataset.train_size;
+            document.getElementById('info-test-size').textContent = info.dataset.test_size;
+            document.getElementById('info-target').textContent = info.dataset.target;
+
+            // 填充圖表說明
+            document.getElementById('chart-info-title').textContent = info.chart_info.title;
+            // 使用 .innerHTML 才能渲染 <span class='legend-no'>
+            document.getElementById('chart-info-description').innerHTML = info.chart_info.description;
+
+        } catch (error) {
+            console.error('Failed to load model info:', error);
+            // 可以在此處顯示錯誤訊息
+            document.getElementById('metric-recall').textContent = '錯誤';
+            document.getElementById('info-dataset-name').textContent = '錯誤';
+            document.getElementById('chart-info-description').textContent = '載入資訊失敗';
+        }
+    }
+
+    // --- 6. 初始化 ---
     setupSliders();
     drawChart();
     updatePrediction(); // 頁面載入時立即預測一次
+    loadModelInfo(); // 【要求 3】頁面載入時取得資訊
 });
