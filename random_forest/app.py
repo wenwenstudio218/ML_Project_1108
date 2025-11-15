@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import os
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import recall_score, f1_score, roc_auc_score
+from sklearn.metrics import recall_score, f1_score, roc_auc_score, accuracy_score, confusion_matrix
 
 # 定義 Blueprint
 rf_bp = Blueprint(
@@ -158,5 +158,61 @@ def get_model_info():
             }
         }
         return jsonify(info)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@rf_bp.route("/rf/evaluate-new-data", methods=['GET'])
+def evaluate_new_data():
+    """
+    使用新的預測資料(data110-北北桃新預測.csv)來評估模型。
+    """
+    if not model or not feature_list:
+        return jsonify({"error": "模型未載入"}), 500
+
+    try:
+        # 1. 載入「新」的評估資料
+        new_data_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'new_turnover_data.csv')
+        df_new = pd.read_csv(new_data_path)
+
+        # 2. 資料前處理 (同訓練時)
+        df_new['turnover_numeric'] = df_new['turnover_intention'].map({'有': 1, '沒有': 0})
+
+        # 確保特徵欄位存在
+        if not all(f in df_new.columns for f in feature_list):
+             return jsonify({"error": "新資料中缺少必要的特徵欄位"}), 400
+
+        X_new = df_new[feature_list]
+        y_new_actual = df_new['turnover_numeric']
+
+        # 3. 執行預測
+        y_new_pred = model.predict(X_new)
+        y_new_pred_proba = model.predict_proba(X_new)[:, 1] # 取 class 1 (離職) 的機率
+
+        # 4. 計算評估指標
+        acc = accuracy_score(y_new_actual, y_new_pred)
+        recall = recall_score(y_new_actual, y_new_pred)
+        f1 = f1_score(y_new_actual, y_new_pred)
+        auc = roc_auc_score(y_new_actual, y_new_pred_proba)
+
+        # 5. 計算混淆矩陣 (Confusion Matrix)
+        # cm[0][0] = True Negative (真陰性)
+        # cm[0][1] = False Positive (偽陽性)
+        # cm[1][0] = False Negative (偽陰性)
+        # cm[1][1] = True Positive (真陽性)
+        cm = confusion_matrix(y_new_actual, y_new_pred)
+
+        # 6. 回傳 JSON 結果
+        return jsonify({
+            "metrics": {
+                "accuracy": f"{acc:.3f}",
+                "recall": f"{recall:.3f}",
+                "f1_score": f"{f1:.3f}",
+                "auc": f"{auc:.3f}",
+                "total_samples": len(df_new)
+            },
+            "confusion_matrix": cm.tolist() # 轉換為 list 才能 JSON 序列化
+        })
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500

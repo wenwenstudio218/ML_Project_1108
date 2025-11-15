@@ -7,84 +7,66 @@ document.addEventListener('DOMContentLoaded', () => {
     const INFO_API_URL = '/rf/info'; // (不同)
     // *****************
 
-    // --- 1. 更新 DOM 元素選擇器 ---
-    const slider1 = document.getElementById('feature1');
-    const slider1Value = document.getElementById('feature1-value');
-    const slider2 = document.getElementById('feature2');
-    const slider2Value = document.getElementById('feature2-value');
+    const evalButton = document.getElementById('run-evaluation-btn');
+    const resultsDiv = document.getElementById('evaluation-results');
 
-    // (新) 預測結果的元素
-    const circleProgress = document.getElementById('circle-progress');
-    const riskPercentageValue = document.getElementById('risk-percentage-value');
-    const riskLabel = document.getElementById('risk-label');
-    const riskInterpretation = document.getElementById('risk-interpretation');
+    if (evalButton) {
+        evalButton.addEventListener('click', runNewDataEvaluation);
+    }
 
     const chartCtx = document.getElementById('scatterChart').getContext('2d');
     let scatterChart;
     let originalDataNo = [];
     let originalDataYes = [];
 
-    // --- 2. 更新預測函式 ---
-    async function updatePrediction() {
-        const f1 = slider1.value;
-        const f2 = slider2.value;
+    /**
+ * 觸發後端 API 進行新資料評估
+ */
+    async function runNewDataEvaluation() {
+        const evalButton = document.getElementById('run-evaluation-btn');
+        const resultsDiv = document.getElementById('evaluation-results');
+
+        evalButton.textContent = '評估中...';
+        evalButton.disabled = true;
 
         try {
-            const response = await fetch(`${PREDICT_API_URL}?f1=${f1}&f2=${f2}`);
-            if (!response.ok) throw new Error('Network response was not ok');
+            const response = await fetch('/rf/evaluate-new-data');
 
-            const data = await response.json();
-            const prob = data.prediction_probability; // 假設回傳 0-100
-
-            // 【要求 2】更新圓形圖
-            // 1. 更新 CSS 變數 --p (驅動圓環)
-            circleProgress.style.setProperty('--p', prob.toFixed(1));
-            // 2. 更新圓心數字 (取整數)
-            riskPercentageValue.textContent = prob.toFixed(0);
-
-            let color, label, interpretation;
-
-            if (prob >= 70) {
-                color = '#dc3545'; // Red
-                label = "高風險";
-                interpretation = "建議立即進行關懷訪談";
-            } else if (prob >= 40) {
-                color = '#ffc107'; // Yellow
-                label = "中度風險";
-                interpretation = "建議列入觀察名單";
-            } else {
-                color = '#28a745'; // Green
-                label = "低風險";
-                interpretation = "目前狀態穩定";
+            if (!response.ok) {
+                throw new Error(`HTTP 錯誤! 狀態: ${response.status}`);
             }
 
-            // 【要求 2】更新圓形圖顏色
-            circleProgress.style.setProperty('--c', color);
-            circleProgress.querySelector('.circle-progress-inner').style.color = color;
+            const data = await response.json();
 
-            // 更新文字
-            riskLabel.style.color = color;
-            riskLabel.textContent = label;
-            riskInterpretation.textContent = interpretation;
+            if (data.error) {
+                alert(`評估失敗: ${data.error}`);
+                return;
+            }
+
+            // 填充指標
+            document.getElementById('eval-total-samples').textContent = data.metrics.total_samples;
+            document.getElementById('eval-accuracy').textContent = data.metrics.accuracy;
+            document.getElementById('eval-recall').textContent = data.metrics.recall;
+            document.getElementById('eval-f1').textContent = data.metrics.f1_score;
+            document.getElementById('eval-auc').textContent = data.metrics.auc;
+
+            // 填充混淆矩陣
+            const [tn, fp, fn, tp] = data.confusion_matrix.flat();
+            document.getElementById('cm-tn').textContent = tn;
+            document.getElementById('cm-fp').textContent = fp;
+            document.getElementById('cm-fn').textContent = fn;
+            document.getElementById('cm-tp').textContent = tp;
+
+            // 顯示結果
+            resultsDiv.classList.remove('hidden');
+            evalButton.textContent = '評估完成';
 
         } catch (error) {
-            console.error('Fetch error:', error);
-            riskLabel.textContent = '預測失敗';
-            riskInterpretation.textContent = '請檢查網路連線或後端服務';
+            console.error('評估新資料時發生錯誤:', error);
+            alert('評估新資料時發生錯誤，請查看 console。');
+            evalButton.textContent = '評估失敗，請重試';
+            evalButton.disabled = false;
         }
-    }
-
-    // --- 3. 滑桿事件監聽 (更新) ---
-    function setupSliders() {
-        slider1.addEventListener('input', () => {
-            slider1Value.textContent = slider1.value;
-            updatePrediction();
-        });
-
-        slider2.addEventListener('input', () => {
-            slider2Value.textContent = slider2.value;
-            updatePrediction();
-        });
     }
 
     // --- 4. 繪製圖表 (修改) ---
@@ -232,9 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 6. 初始化 ---
-    setupSliders();
     drawChart();
     setupChartFilters();
-    updatePrediction(); // 頁面載入時立即預測一次
     loadModelInfo(); // 【要求 3】頁面載入時取得資訊
 });

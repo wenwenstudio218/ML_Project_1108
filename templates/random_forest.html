@@ -13,43 +13,59 @@
     <p>調整下方的壓力特徵滑桿，即時預測勞工的離職傾向機率</p>
 </div>
 
-<div class="prediction-wrapper">
+<div class="batch-evaluation-wrapper">
+    <div class="card-style">
+        <h2 class="panel-title">新資料批次評估</h2>
+        <p>點擊按鈕以載入 <code>110年-勞工生活及就業狀況調查(北北桃)</code> 資料，並使用 隨機森林模型 進行預測與評估。</p>
+        <button id="run-evaluation-btn" class="btn-primary">開始評估新資料</button>
 
-    <div class="controls-panel card-style">
-        <h2 class="panel-title">壓力特徵控制器 (1很滿意→5很不滿意)</h2>
+        <div id="evaluation-results" class="hidden">
+            <h3>評估結果 (基於 <span id="eval-total-samples">...</span> 筆新資料)</h3>
 
-        <div class="slider-group">
-            <label for="feature1">
-                <span>勞工對工作負荷量之滿意度</span>
-                <span class="slider-value" id="feature1-value">3</span>
-            </label>
-            <input type="range" id="feature1" class="slider" min="1" max="5" value="3" step="1">
-        </div>
+            <div class="info-blocks-wrapper">
+                <div class="info-card">
+                    <h4>整體指標</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-item-label">準確率 (Accuracy)</span>
+                            <span class="info-item-value" id="eval-accuracy">...</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-item-label">召回率 (Recall)</span>
+                            <span class="info-item-value" id="eval-recall">...</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-item-label">F1-Score</span>
+                            <span class="info-item-value" id="eval-f1">...</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-item-label">AUC 分數</span>
+                            <span class="info-item-value" id="eval-auc">...</span>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="slider-group">
-            <label for="feature2">
-                <span>勞工對員工申訴管道之暢通之滿意度</span>
-                <span class="slider-value" id="feature2-value">3</span>
-            </label>
-            <input type="range" id="feature2" class="slider" min="1" max="5" value="3" step="1">
-        </div>
-    </div>
-
-    <div class="results-panel card-style">
-        <h2 class="panel-title">即時預測結果</h2>
-
-        <div class="circle-percentage-container">
-            <div class="circle-progress" id="circle-progress">
-                <div class="circle-progress-inner">
-                    <span id="risk-percentage-value">...</span>%
+                <div class="info-card">
+                    <h4>混淆矩陣 (Confusion Matrix)</h4>
+                    <table class="confusion-matrix">
+                        <tr>
+                            <td class="cm-label"></td>
+                            <th class="cm-header">預測：沒有</th>
+                            <th class="cm-header">預測：有</th>
+                        </tr>
+                        <tr>
+                            <th class="cm-header">實際：沒有</th>
+                            <td class="cm-cell" id="cm-tn">...</td>
+                            <td class="cm-cell" id="cm-fp">...</td>
+                        </tr>
+                        <tr>
+                            <th class="cm-header">實際：有</th>
+                            <td class="cm-cell" id="cm-fn">...</td>
+                            <td class="cm-cell" id="cm-tp">...</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
-            <p class="circle-percentage-label">離職傾向機率</p>
-        </div>
-
-        <div class="risk-interpretation">
-            <h3 id="risk-label">計算中...</h3>
-            <p id="risk-interpretation">請拖動滑桿以查看分析</p>
         </div>
     </div>
 </div>

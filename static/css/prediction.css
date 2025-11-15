@@ -231,10 +231,78 @@
     margin: 0;
 }
 
+/* 批次評估按鈕 */
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* 評估結果 */
+#evaluation-results.hidden {
+    display: none;
+}
+
+#evaluation-results h3 {
+    margin-top: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.batch-evaluation-wrapper .info-blocks-wrapper {
+    margin-top: 20px;
+}
+
+/* 混淆矩陣表格 */
+.confusion-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.confusion-matrix th,
+.confusion-matrix td {
+    border: 1px solid #ddd;
+    padding: 12px;
+}
+
+.confusion-matrix .cm-header {
+    background-color: #f4f4f4;
+    font-weight: 600;
+}
+
+.confusion-matrix .cm-cell {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+#cm-tp,
+#cm-tn {
+    background-color: #e6f7ff;
+    /* 正確預測 */
+}
+
+#cm-fp,
+#cm-fn {
+    background-color: #ffe6e6;
+    /* 錯誤預測 */
+}
+
 
 /* --- 圖表區塊 --- */
 .chart-container {
     margin-bottom: 2rem;
+    margin-top: 2rem;
 }
 
 .chart-container h2 {
