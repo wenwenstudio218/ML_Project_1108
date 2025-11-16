@@ -1,25 +1,41 @@
 // G-02: 使用 IIFE (立即執行函式) 來避免汙染全域變數
 (function () {
 
+    // G-03: 設定報告最大行數
+    const MAX_REPORT_ROWS = 10;
+
     document.addEventListener('DOMContentLoaded', () => {
 
         // 載入頁面時，執行這些既有函式
         loadModelInfo();
         loadChartData();
 
-        // G-02: --- 新增表單處理邏輯 ---
+        // G-02: --- 表單處理邏輯 ---
         const predictionForm = document.getElementById('prediction-form');
         const resetButton = document.getElementById('reset-form-btn');
-        const formMessage = document.getElementById('form-message');
 
         if (predictionForm) {
-            // 監聽表單的 "submit" 事件
             predictionForm.addEventListener('submit', handleFormSubmit);
         }
-
         if (resetButton) {
-            // 監聽 "重新輸入" 按鈕的 "click" 事件
             resetButton.addEventListener('click', resetForm);
+        }
+
+        // G-03: --- 報告控制按鈕邏輯 ---
+        const downloadBtn = document.getElementById('download-pdf-btn');
+        const clearBtn = document.getElementById('clear-report-btn');
+        const tableBody = document.getElementById('report-table-body');
+
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', handleDownloadPDF);
+        }
+        if (clearBtn) {
+            clearBtn.addEventListener('click', handleClearReport);
+        }
+
+        // G-03: 新增刪除按鈕的事件委派
+        if (tableBody) {
+            tableBody.addEventListener('click', handleDeleteRow);
         }
     });
 
@@ -50,21 +66,12 @@
 
         // 3. 呼叫後端 API 進行預測
         try {
-            // 使用 f1 和 f2 參數呼叫 /rf/predict
             const response = await fetch(`/rf/predict?f1=${f1}&f2=${f2}`);
-
-            if (!response.ok) {
-                throw new Error(`伺服器錯誤: ${response.status}`);
-            }
-
+            if (!response.ok) throw new Error(`伺服器錯誤: ${response.status}`);
             const data = await response.json();
-
-            if (data.error) {
-                throw new Error(data.error);
-            }
+            if (data.error) throw new Error(data.error);
 
             // 4. 將預測結果添加到報告表格中
-            // 我們需要的是 data.prediction_class (0 或 1)
             addResultToReport(employeeId, f1, f2, data.prediction_class);
 
             // 5. 顯示成功訊息並清空表單
@@ -80,27 +87,32 @@
     }
 
     /**
-     * G-02: 將預測結果動態新增到表格
+     * G-02 & G-03: 將預測結果動態新增到表格 (含10筆上限 和 刪除按鈕)
      */
     function addResultToReport(id, f1, f2, prediction) {
         const tableBody = document.getElementById('report-table-body');
         if (!tableBody) return; // 防呆
 
-        const newRow = document.createElement('tr'); // 建立一個新的 <tr>
+        // G-03: 檢查行數，如果 >= 10, 移除最後一筆
+        while (tableBody.rows.length >= MAX_REPORT_ROWS) {
+            tableBody.deleteRow(-1); // -1 代表最後一行
+        }
 
-        // 根據預測結果 (0 或 1) 賦予不同的 CSS class
+        // G-03: 在第一行插入新資料
+        const newRow = tableBody.insertRow(0);
+
         newRow.className = prediction === 1 ? 'result-positive' : 'result-negative';
 
-        // 填入 HTML 內容
+        // G-03: 更新 innerHTML 以包含刪除按鈕
         newRow.innerHTML = `
             <td>${escapeHTML(id)}</td>
             <td>${escapeHTML(f1)}</td>
             <td>${escapeHTML(f2)}</td>
             <td>${prediction}</td>
+            <td>
+                <button class="btn-delete" type="button" title="刪除此筆資料">刪除</button>
+            </td>
         `;
-
-        // 將新的一行插入到表格的最上方 (tbody 的第一個子元素)
-        tableBody.prepend(newRow);
     }
 
     /**
@@ -119,6 +131,99 @@
     }
 
     /**
+     * G-03: 處理刪除單一行
+     */
+    function handleDeleteRow(event) {
+        // 檢查點擊的是否是 .btn-delete 按鈕
+        if (event.target.classList.contains('btn-delete')) {
+            const row = event.target.closest('tr'); // 找到最近的 <tr> 
+            if (row) {
+                row.remove(); // 刪除該行
+            }
+        }
+    }
+
+    /**
+     * G-03: 處理清空報告
+     */
+    function handleClearReport() {
+        const tableBody = document.getElementById('report-table-body');
+        if (tableBody) {
+            tableBody.innerHTML = ''; // 清空所有內容
+        }
+    }
+
+    /**
+     * G-03: 處理下載 PDF
+     */
+    async function handleDownloadPDF() {
+        // 1. 檢查函式庫
+        if (typeof window.jspdf === 'undefined' || typeof window.html2canvas === 'undefined') {
+            console.error('PDF 匯出函式庫 (jsPDF or html2canvas) 未載入。');
+            alert('匯出 PDF 失敗，請檢查網路連線並重試。');
+            return;
+        }
+
+        // G-03: 擷取 #prediction-report-card (包含標題和表格)
+        const reportCard = document.getElementById('prediction-report-card');
+        if (!reportCard) return;
+
+        const { jsPDF } = window.jspdf;
+
+        // 顯示載入狀態
+        const downloadBtn = document.getElementById('download-pdf-btn');
+        const originalText = downloadBtn.textContent;
+        downloadBtn.textContent = '產生中...';
+        downloadBtn.disabled = true;
+
+        try {
+            // 2. 使用 html2canvas 擷取報告卡片
+            const canvas = await html2canvas(reportCard, {
+                scale: 2 // 提高解析度
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+
+            // 3. 計算 PDF 尺寸
+            const pdf = new jsPDF('p', 'mm', 'a4'); // A4 (210mm x 297mm)
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+
+            // 根據 PDF 寬度計算圖片高度 (保持長寬比)
+            const imgHeight = (canvasHeight * pdfWidth) / canvasWidth;
+            let finalImgHeight = imgHeight;
+            let finalImgWidth = pdfWidth;
+            let position = 10; // 頂部邊界
+
+            // 如果圖片高度超過A4頁面高度 (減去邊界)，則縮小圖片以符合頁面
+            if (imgHeight > (pdfHeight - position * 2)) {
+                finalImgHeight = pdfHeight - position * 2;
+                finalImgWidth = (canvasWidth * finalImgHeight) / canvasHeight;
+            }
+
+            // 計算置中
+            const xOffset = (pdfWidth - finalImgWidth) / 2;
+
+            // 4. 將圖片加入 PDF
+            pdf.addImage(imgData, 'PNG', xOffset, position, finalImgWidth, finalImgHeight);
+
+            // 5. 儲存檔案
+            pdf.save('prediction-report.pdf');
+
+        } catch (error) {
+            console.error('產生 PDF 失敗:', error);
+            alert('產生 PDF 失敗。');
+        } finally {
+            // 恢復按鈕
+            downloadBtn.textContent = originalText;
+            downloadBtn.disabled = false;
+        }
+    }
+
+    /**
      * G-02: 輔助函式 - 防止簡易的 XSS 攻擊
      */
     function escapeHTML(str) {
@@ -132,7 +237,7 @@
             .replace(/'/g, '&#039;');
     }
 
-    // --- G-02: 以下是您原本保留的函式 (無需修改) ---
+    // --- G-02: 以下是您原本保留的函式 (G-03有修改 setupChartFilters) ---
 
     /**
      * 載入模型資訊 (保留)
@@ -272,14 +377,24 @@
     }
 
     /**
-     * 設定圖表篩選按鈕 (保留)
+     * G-03: 修改: 設定圖表篩選按鈕 (排除其他按鈕)
      */
     function setupChartFilters() {
         const buttons = document.querySelectorAll('.chart-filter-btn');
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
-                // 移除所有按鈕的 'active'
-                buttons.forEach(b => b.classList.remove('active'));
+                // 檢查按鈕是否在 .report-controls 內，如果是，則不執行篩選
+                if (btn.closest('.report-controls')) {
+                    return;
+                }
+
+                // 檢查是否為表單按鈕
+                if (btn.closest('.form-buttons')) {
+                    return;
+                }
+
+                // 移除所有按鈕的 'active' (僅限圖表控制按鈕)
+                document.querySelectorAll('.chart-controls .chart-filter-btn').forEach(b => b.classList.remove('active'));
                 // 為當前按鈕添加 'active'
                 btn.classList.add('active');
 
@@ -319,4 +434,4 @@
         });
     }
 
-})(); // G-02: IIFE 結束
+})(); // G-03: IIFE 結束

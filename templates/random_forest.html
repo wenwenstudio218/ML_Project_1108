@@ -4,34 +4,28 @@
 
 {% block head %}
 {{ super() }}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/prediction.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/random_forest.css') }}">
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
     <h1>隨機森林 Random Forest</h1>
-    <!-- G-02: 更新頁面說明 -->
     <p>請在下方表單中輸入員工資料，系統將預測其離職傾向並將結果新增至報告中。</p>
 </div>
 
-<!-- G-02: 將滑桿區塊替換為新的表單和報告表格 -->
 <div class="interactive-prediction-wrapper">
 
-    <!-- 輸入表單 -->
     <div class="card-style" id="prediction-form-card">
         <h2 class="panel-title">新預測資料輸入</h2>
-        <!-- 使用 <form> 元素以利於事件處理 -->
         <form id="prediction-form" class="prediction-form-grid">
 
             <div class="form-group">
                 <label for="employee_id">員工ID</label>
-                <!-- 設置為 required -->
                 <input type="text" id="employee_id" name="employee_id" placeholder="例如: A001" required>
             </div>
 
             <div class="form-group">
-                <label for="feature1">工作負荷量滿意度 (1=滿意, 5=不滿意)</label>
-                <!-- 設置為 required 並有預設提示 -->
+                <label for="feature1">工作負荷量 (1很滿意→5很不滿意)</label>
                 <select id="feature1" name="feature1" required>
                     <option value="" disabled selected>請選擇...</option>
                     <option value="1">1</option>
@@ -43,8 +37,7 @@
             </div>
 
             <div class="form-group">
-                <label for="feature2">申訴管道滿意度 (1=滿意, 5=不滿意)</label>
-                <!-- 設置為 required 並有預設提示 -->
+                <label for="feature2">申訴管道暢通 (1很滿意→5很不滿意)</label>
                 <select id="feature2" name="feature2" required>
                     <option value="" disabled selected>請選擇...</option>
                     <option value="1">1</option>
@@ -56,16 +49,13 @@
             </div>
 
             <div class="form-buttons">
-                <button type="submit" class="btn-primary">送出預測</button>
-                <!-- 重新輸入按鈕 -->
-                <button type="button" id="reset-form-btn" class="btn-secondary">重新輸入</button>
+                <button type="submit" class="chart-filter-btn active">送出預測</button>
+                <button type="button" id="reset-form-btn" class="chart-filter-btn">重新輸入</button>
             </div>
         </form>
-        <!-- 用於顯示成功或錯誤訊息 -->
         <div id="form-message" class="form-message" role="alert"></div>
     </div>
 
-    <!-- 預測報告表格 -->
     <div class="card-style" id="prediction-report-card">
         <h2 class="panel-title">預測報告</h2>
         <div class="prediction-report-container">
@@ -76,18 +66,20 @@
                         <th>工作負荷 (x1)</th>
                         <th>申訴管道 (x5)</th>
                         <th>預測結果 (0=無, 1=有)</th>
+                        <th>刪除</th>
                     </tr>
                 </thead>
                 <tbody id="report-table-body">
-                    <!-- JavaScript 將會在此插入預測結果 -->
                 </tbody>
             </table>
         </div>
+
+        <div class="report-controls">
+            <button type="button" id="download-pdf-btn" class="chart-filter-btn">下載為PDF檔</button>
+            <button type="button" id="clear-report-btn" class="chart-filter-btn">清空報告內容</button>
+        </div>
     </div>
 </div>
-<!-- 新區塊結束 -->
-
-
 <div class="chart-container card-style">
     <h2>特徵分佈散佈圖 (200筆隨機樣本)</h2>
     <div class="chart-controls">
@@ -173,7 +165,9 @@
 {% endblock %}
 
 {% block code %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script src="{{ url_for('static', filename='vendor/chart.js/chart.umd.js') }}"></script>
-<!-- G-02: 確保載入的是 random_forest.js -->
 <script src="{{ url_for('static', filename='js/random_forest.js') }}"></script>
 {% endblock%}

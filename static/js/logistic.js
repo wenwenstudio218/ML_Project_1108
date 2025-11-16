@@ -126,12 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         x: {
                             title: { display: true, text: chartData.x_label },
                             beginAtZero: true,
-                            max: 6.0
+                            max: 5.5,
                         },
                         y: {
                             title: { display: true, text: chartData.y_label },
                             beginAtZero: true,
-                            max: 6.0
+                            max: 5.5,
                         }
                     },
                     plugins: {
