@@ -1,4 +1,3 @@
-# lesson13_expanded/logistic_regression/app.py
 from flask import Blueprint, render_template, jsonify, request
 import joblib
 import numpy as np
@@ -16,7 +15,6 @@ logistic_bp = Blueprint(
 )
 
 # 載入模型和縮放器
-# 使用 os.path.join 確保路徑在不同作業系統下皆可運作
 try:
     model_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'logistic_model.joblib')
     scaler_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'logistic_scaler.joblib')
@@ -25,22 +23,18 @@ try:
     model = joblib.load(model_path)
     scaler = joblib.load(scaler_path)
     
-    # 載入原始資料 (為了 scatter plot)
-    # 我們只需要 'stress_workload_amount', 'stress_org_climate_grievance', 'turnover_intention'
+    # 載入原始資料
     df = pd.read_csv(data_path, usecols=[
         'stress_workload_amount', 
         'stress_org_climate_grievance', 
         'turnover_intention'
     ])
-    # 取樣 200 筆
     chart_data_df = df.sample(n=200, random_state=42)
-
-    # --- 3. 【要求 3】新增：自動計算評估指標 ---
     
     # 載入完整資料
     df_full = pd.read_csv(data_path)
     
-    # 資料前處理 (同 notebook)
+    # 資料前處理
     df_full['turnover_numeric'] = df_full['turnover_intention'].map({'有': 1, '沒有': 0})
     features = ['stress_workload_amount', 'stress_org_climate_grievance']
     target = 'turnover_numeric'
@@ -48,16 +42,14 @@ try:
     X = df_full[features]
     y = df_full[target]
     
-    # 使用「已儲存」的 scaler 來轉換「所有」資料
     X_scaled = scaler.transform(X)
     
-    # 關鍵：使用與 notebook 相同的分割參數 (我們假設 test_size=0.2, random_state=42)
-    # 如果您的 notebook 參數不同，請修改這裡！
+    # 資料集分割
     X_train, X_test, y_train, y_test = train_test_split(
         X_scaled, y, 
         test_size=0.3, 
         random_state=42, 
-        stratify=y  # 建議加上 stratify 確保 y 比例一致
+        stratify=y
     )
     
     # 使用載入的 model 進行預測
@@ -79,7 +71,7 @@ except Exception as e:
     model = None
     scaler = None
     df_chart = pd.DataFrame()
-    real_metrics = { # 發生錯誤時的預設值
+    real_metrics = { 
         "recall": "N/A", "f1_score": "N/A", "auc": "N/A",
         "total_samples": "N/A", "train_size": "N/A", "test_size": "N/A"
     }
@@ -102,22 +94,20 @@ def predict():
         return jsonify({"error": "模型未載入"}), 500
 
     try:
-        # 1. 從 GET 請求獲取特徵值
+        # 從 GET 請求獲取特徵值
         f1 = float(request.args.get('f1', 1)) # stress_workload_amount
         f2 = float(request.args.get('f2', 1)) # stress_org_climate_grievance
 
-        # 2. 建立特徵陣列 (順序必須與訓練時相同)
+        # 建立特徵陣列 (順序必須與訓練時相同)
         features = np.array([[f1, f2]])
 
-        # 3. 使用載入的 scaler 轉換資料
+        # 使用載入的 scaler 轉換資料
         features_scaled = scaler.transform(features)
 
-        # 4. 進行預測 (取得機率)
-        # model.predict_proba 會回傳 [[class_0_prob, class_1_prob]]
-        # 假設 "有" 離職傾向是 class 1
+        # 進行預測 (取得機率)
         prediction_prob = model.predict_proba(features_scaled)[0][1] 
 
-        # 5. 回傳 JSON 結果
+        # 回傳 JSON 結果
         return jsonify({
             "feature_names": ["工作量壓力", "組織風氣-申訴管道壓力"],
             "feature_values": [f1, f2],
@@ -133,11 +123,9 @@ def get_chart_data():
     if chart_data_df.empty:
         return jsonify({"error": "圖表資料未載入"}), 500
         
-    # 將 '有' '沒有' 轉換為 1 和 0，便於圖表處理
     plot_data = chart_data_df.copy()
     plot_data['turnover_numeric'] = plot_data['turnover_intention'].map({'有': 1, '沒有': 0})
     
-    # 轉換為 Chart.js 偏好的格式
     data_points = plot_data.to_dict('records')
     
     return jsonify({
@@ -150,7 +138,6 @@ def get_chart_data():
 def get_model_info():
     """提供模型評估與資訊"""
     try:
-        # 範例數據 (請您替換為模型訓練的真實數據)
         info = {
             "evaluation": {
                 "recall": real_metrics["recall"],

@@ -1,4 +1,3 @@
-# lesson13_expanded/random_forest/app.py
 from flask import Blueprint, render_template, jsonify, request
 import joblib
 import numpy as np
@@ -24,31 +23,25 @@ try:
     model = joblib.load(model_path)
     feature_list = joblib.load(features_path) # ['stress_workload_amount', 'stress_org_climate_grievance']
     
-    # 載入原始資料 (為了 scatter plot)
+    # 載入原始資料
     df = pd.read_csv(data_path, usecols=[
         'stress_workload_amount', 
         'stress_org_climate_grievance', 
         'turnover_intention'
     ])
-    # 取樣 200 筆
     chart_data_df = df.sample(n=200, random_state=42) # 使用相同的 random_state 確保資料一致
 
-# --- 3. 【要求 3】新增：自動計算評估指標 ---
-    
     # 載入完整資料
     df_full = pd.read_csv(data_path)
     
-    # 資料前處理 (同 notebook)
+    # 資料前處理
     df_full['turnover_numeric'] = df_full['turnover_intention'].map({'有': 1, '沒有': 0})
     target = 'turnover_numeric'
     
-    # X 使用載入的 feature_list
     X = df_full[feature_list] 
     y = df_full[target]
-    
-    # 隨機森林不需要縮放 (X 保持原樣)
-    
-    # 關鍵：使用與 notebook 相同的分割參數 (我們假設 test_size=0.2, random_state=42)
+        
+    # 資料集分割
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, 
         test_size=0.3, 
@@ -75,7 +68,7 @@ except Exception as e:
     model = None
     feature_list = []
     df_chart = pd.DataFrame()
-    real_metrics = { # 發生錯誤時的預設值
+    real_metrics = { 
         "recall": "N/A", "f1_score": "N/A", "auc": "N/A",
         "total_samples": "N/A", "train_size": "N/A", "test_size": "N/A"
     }
@@ -96,19 +89,18 @@ def predict():
         return jsonify({"error": "模型未載入"}), 500
 
     try:
-        # 1. 從 GET 請求獲取特徵值
+        # 從 GET 請求獲取特徵值
         f1 = float(request.args.get('f1', 1)) # stress_workload_amount
         f2 = float(request.args.get('f2', 1)) # stress_org_climate_grievance
 
-        # 2. 建立 Pandas DataFrame (隨機森林模型需要特徵名稱)
-        # feature_list 確保了順序和名稱與訓練時完全一致
+        # 建立 Pandas DataFrame
         features_df = pd.DataFrame([[f1, f2]], columns=feature_list)
 
-        # 3. 進行預測 (取得機率 和 類別)
+        # 進行預測 (取得機率 和 類別)
         prediction_prob = model.predict_proba(features_df)[0][1] 
         prediction_class = model.predict(features_df)[0]     # G-02: 新增類別預測
 
-        # 4. 回傳 JSON 結果
+        # 回傳 JSON 結果
         return jsonify({
             "feature_names": feature_list,
             "feature_values": [f1, f2],
@@ -140,7 +132,6 @@ def get_chart_data():
 def get_model_info():
     """提供模型評估與資訊"""
     try:
-        # 範例數據 (請您替換為模型訓練的真實數據)
         info = {
             "evaluation": {
                 "recall": real_metrics["recall"],

@@ -45,32 +45,25 @@
 .interactive-prediction-wrapper {
     display: grid;
     grid-template-columns: 1fr;
-    /* 在小螢幕上預設為單欄堆疊 */
     gap: 20px;
     margin-bottom: 20px;
 }
 
-/* 在較大的螢幕上 (例如平板電腦 768px 以上) 改為兩欄 */
 @media (min-width: 768px) {
     .interactive-prediction-wrapper {
-        grid-template-columns: 350px 1fr;
-        /* 左側表單 (固定寬度)，右側表格 (自動填滿) */
-        align-items: flex-start;
-        /* 頂部對齊 */
+    grid-template-columns: 350px 1fr;
+    align-items: flex-start;
     }
 }
 
-/* G-04 / 需求 1: 讓報告卡片可以垂直伸展 */
 #prediction-report-card {
     display: flex;
     flex-direction: column;
     height: 100%;
-    /* 確保卡片佔滿 grid 區域高度 */
 }
 
 #prediction-report-card .prediction-report-container {
     flex-grow: 1;
-    /* 讓表格容器填滿卡片剩餘空間 */
 }
 
 /* 表單網格佈局 */
@@ -78,13 +71,11 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 15px;
-    /* 表單項目間距 */
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    /* 標籤在上，輸入框在下 */
 }
 
 .form-group label {
@@ -93,24 +84,9 @@
     color: #333;
 }
 
-/* 表單輸入框與下拉選單的統一
-...
-[Immersive content redacted for brevity.]
-...
-border: 1px solid #f5c6cb;
-}
-.form-message.success {
-    display: block;
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-
 /* 預測報告表格 */
 .prediction-report-container {
     overflow-y: hidden;
-    /* G-03: 隱藏滾動條 */
     border: 1px solid #eee;
     border-radius: 5px;
 }
@@ -118,7 +94,6 @@ border: 1px solid #f5c6cb;
 .prediction-report-table {
     width: 100%;
     border-collapse: collapse;
-    /* 合併表格邊框 */
 }
 
 .prediction-report-table th,
@@ -126,59 +101,43 @@ border: 1px solid #f5c6cb;
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #ddd;
-    /* 水平分隔線 */
 }
 
 .prediction-report-table th {
     background-color: #f8f9fa;
-    /* 表頭背景色 */
     font-weight: 600;
     position: sticky;
-    /* 讓表頭在滾動時固定在頂部 */
     top: 0;
     z-index: 1;
 }
 
 .prediction-report-table tbody tr:nth-child(even) {
     background-color: #f8f9fa;
-    /* 斑馬條紋 */
 }
 
-/* G-03: 修改: 預測結果高亮 (鎖定第4欄) */
 .prediction-report-table tbody tr.result-positive td:nth-of-type(4) {
     color: #d90429;
-    /* 離職傾向 (1) - 紅色 */
     font-weight: bold;
 }
 
 .prediction-report-table tbody tr.result-negative td:nth-of-type(4) {
     color: #008000;
-    /* 無離職傾向 (0) - 綠色 */
     font-weight: bold;
 }
 
-
-/* G-03: --- 新增樣式 --- */
-
-/* 1. 加高表單元素 */
 .prediction-form-grid input[type="text"],
 .prediction-form-grid select {
     padding: 12px 10px;
-    /* 增加垂直 padding */
     height: 44px;
-    /* 設定固定高度 */
     font-size: 16px;
-    /* 放大字體 */
 }
 
 /* 2. 報告控制按鈕 (PDF/Clear) */
 .report-controls {
     display: flex;
     flex-wrap: wrap;
-    /* G-03: 允許按鈕換行 */
     gap: 10px;
     margin-top: 15px;
-    /* 與表格間距 */
 }
 
 /* 3. 刪除按鈕樣式 */
@@ -197,13 +156,10 @@ border: 1px solid #f5c6cb;
     background-color: #f8d7da;
 }
 
-/* 4. 報告表格: 新增刪除欄位 */
 .prediction-report-table th:last-child,
 .prediction-report-table td:last-child {
     text-align: center;
-    /* 讓刪除按鈕置中 */
     width: 80px;
-    /* 給刪除欄一個固定寬度 */
 }
 
 /* --- 圖表區塊 --- */
@@ -218,16 +174,11 @@ border: 1px solid #f5c6cb;
     margin-bottom: 1.5rem;
 }
 
-/* 要求：高度 500px */
 .chart-canvas-wrapper {
     position: relative;
     height: 500px;
-    /* 固定高度 */
     width: 100%;
 }
-
-/* Chart.js 本身需要 canvas 在 relative 容器中才能
-   設置 responsive:true 和 maintainAspectRatio:false */
 
 .chart-legend {
     text-align: center;
@@ -251,12 +202,9 @@ border: 1px solid #f5c6cb;
 /* --- 新增的資訊區塊 --- */
 .info-blocks-wrapper {
     display: flex;
-    /* 改為 flex */
     flex-direction: column;
-    /* 由上而下堆疊 */
     gap: 2rem;
     margin-top: 2rem;
-    /* 確保與圖表有間距 */
 }
 
 .info-card h3 {
@@ -270,25 +218,17 @@ border: 1px solid #f5c6cb;
 .info-grid {
     display: grid;
     gap: 1rem;
-    /* 區塊間的間距 */
     margin-top: 1rem;
-
-    /* 電腦版：由左至右排列 (Grid)
-      自動適應欄位，每個區塊最小 150px，最大 1fr (均分剩餘空間)
-      這會自動處理 3 欄或 5 欄的情況
-    */
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 
 .info-item {
     background-color: #e6f2ff;
-    /* 淡藍色底色 */
     padding: 1rem;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    /* 標籤和數值間的垂直距離 */
 }
 
 .info-item-label {
@@ -301,12 +241,9 @@ border: 1px solid #f5c6cb;
     font-size: 1.25rem;
     font-weight: 700;
     color: #0056b3;
-    /* 深藍色 */
-    /* 處理長文字換行 */
     word-break: break-word;
 }
 
-/* 處理「圖表說明」區塊的 <p> (舊樣式被移除了) */
 .info-card p {
     line-height: 1.7;
     margin: 1rem 0 0 0;
@@ -317,11 +254,8 @@ border: 1px solid #f5c6cb;
     display: flex;
     justify-content: center;
     gap: 0.75rem;
-    /* 12px */
     margin-bottom: 1.5rem;
-    /* 24px */
     flex-wrap: wrap;
-    /* 手機換行 */
 }
 
 .chart-filter-btn {
@@ -355,13 +289,9 @@ border: 1px solid #f5c6cb;
 
 @media (max-width: 768px) {
     .info-grid {
-        /* 在手機上，強制變為單欄 (由上而下)
-          (雖然 auto-fit 在空間不足時也會這樣做，但明確定義更保險)
-        */
         grid-template-columns: 1fr;
     }
 
-    /* 在手機上讓 5 欄的模型資訊區塊也變成單欄 */
     #model-info-list.info-grid {
         grid-template-columns: 1fr;
     }

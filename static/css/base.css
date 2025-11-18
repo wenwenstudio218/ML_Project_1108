@@ -18,13 +18,11 @@ body {
     margin: 20px auto;
     padding: 0 20px;
     flex-grow: 1;
-    /* 讓 main 內容填滿可用空間 */
 }
 
 nav {
     display: flex;
     justify-content: space-between;
-    /* 電腦版已是 space-between */
     align-items: center;
     background-color: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(8px);
@@ -40,17 +38,14 @@ nav {
 
 .nav-title {
     font-size: 1.5rem;
-    /* 24px */
     font-weight: 700;
     color: #0056b3;
-    /* 換個深藍色 */
     margin: 0;
 }
 
 .nav-links {
     display: flex;
     gap: 1.5rem;
-    /* 24px */
 }
 
 .nav-links a {
@@ -58,7 +53,6 @@ nav {
     color: #555;
     font-weight: 500;
     padding: 0.5rem 0.25rem;
-    /* 稍微減少 padding 避免 hover 底線重疊 */
     position: relative;
     transition: color 0.3s ease;
 }
@@ -107,11 +101,6 @@ nav {
     transition: transform 0.3s ease;
 }
 
-/* .activate {
-    background-color: #eaeaea;
-} */
-
-
 footer {
     text-align: center;
     padding: 1rem;
@@ -156,18 +145,15 @@ footer {
 
     .menu-toggle {
         display: block;
-        /* 顯示漢堡選單按鈕 */
     }
 
     .nav-links {
-        /* ... (保留 .nav-links 在 mobile 的樣式) ... */
         display: none;
         flex-direction: column;
         width: 100%;
         background-color: rgba(255, 255, 255);
         position: absolute;
         top: 65px;
-        /* 調整到 nav 下方 */
         left: 0;
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
     }

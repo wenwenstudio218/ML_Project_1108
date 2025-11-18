@@ -38,25 +38,21 @@
 .prediction-wrapper {
     display: flex;
     flex-wrap: wrap;
-    /* 響應式換行 */
     gap: 2rem;
     margin-bottom: 2rem;
 }
 
 .controls-panel {
     flex: 1;
-    /* 佔 1 份 */
     min-width: 320px;
 }
 
 .results-panel {
     flex: 1;
-    /* 佔 1 份 */
     min-width: 320px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* 垂直置中 */
 }
 
 .panel-title {
@@ -134,18 +130,15 @@
 }
 
 
-/* (右) 結果樣式 (仿造 index.html) */
-/* 【要求 2】新增圓形百分比樣式 */
+/* (右) 結果樣式 */
 .circle-percentage-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     margin-bottom: 1rem;
-    /* 縮小與下方文字的間距 */
 }
 
-/* 註冊 CSS 變數 --p (百分比) */
 @property --p {
     syntax: '<number>';
     inherits: false;
@@ -154,13 +147,9 @@
 
 .circle-progress {
     --p: 0;
-    /* 將由 JS 更新 */
     --b: 16px;
-    /* 圓環厚度 */
     --c: #007bff;
-    /* 顏色 (將由 JS 更新) */
     --bg: #e9ecef;
-    /* 圓環背景色 */
 
     width: 180px;
     height: 180px;
@@ -168,7 +157,6 @@
     display: grid;
     place-items: center;
 
-    /* 核心：使用 conic-gradient 繪製圓環 */
     background: conic-gradient(var(--c) calc(var(--p) * 1%), var(--bg) 0);
 
     transition: --p 0.5s ease, background 0.3s ease;
@@ -176,31 +164,25 @@
 
 .circle-progress-inner {
     background: #ffffff;
-    /* 中心圓的背景色 (遮罩) */
     width: calc(100% - var(--b) * 2);
     height: calc(100% - var(--b) * 2);
     border-radius: 50%;
     display: flex;
-    /* 使用 flex 來排版數字和 % */
     align-items: center;
-    /* 讓 % 和數字底部對齊 */
     justify-content: center;
 
     font-weight: 700;
     color: var(--c);
-    /* 文字顏色繼承圓環顏色 */
     transition: color 0.3s ease;
     line-height: 1;
 }
 
 #risk-percentage-value {
     font-size: 3.5rem;
-    /* 56px - 數字 */
 }
 
 .circle-progress-inner span+span {
     font-size: 1.5rem;
-    /* 24px - 百分比符號 */
     font-weight: 600;
     margin-left: 2px;
     transform: translateY(-5px);
@@ -221,7 +203,6 @@
     font-size: 1.5rem;
     margin: 0 0 0.25rem 0;
     color: #333;
-    /* 顏色由 JS 控制 */
 }
 
 .risk-interpretation p {
@@ -243,16 +224,11 @@
     margin-bottom: 1.5rem;
 }
 
-/* 要求：高度 500px */
 .chart-canvas-wrapper {
     position: relative;
     height: 500px;
-    /* 固定高度 */
     width: 100%;
 }
-
-/* Chart.js 本身需要 canvas 在 relative 容器中才能
-   設置 responsive:true 和 maintainAspectRatio:false */
 
 .chart-legend {
     text-align: center;
@@ -273,15 +249,12 @@
 }
 
 
-/* --- 新增的資訊區塊 --- */
+/* --- 資訊區塊 --- */
 .info-blocks-wrapper {
     display: flex;
-        /* 改為 flex */
-        flex-direction: column;
-        /* 由上而下堆疊 */
-        gap: 2rem;
-        margin-top: 2rem;
-        /* 確保與圖表有間距 */
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 2rem;
 }
 
 .info-card h3 {
@@ -295,25 +268,17 @@
 .info-grid {
     display: grid;
     gap: 1rem;
-    /* 區塊間的間距 */
     margin-top: 1rem;
-
-    /* 電腦版：由左至右排列 (Grid)
-      自動適應欄位，每個區塊最小 150px，最大 1fr (均分剩餘空間)
-      這會自動處理 3 欄或 5 欄的情況
-    */
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 
 .info-item {
     background-color: #e6f2ff;
-    /* 淡藍色底色 */
     padding: 1rem;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    /* 標籤和數值間的垂直距離 */
 }
 
 .info-item-label {
@@ -326,12 +291,9 @@
     font-size: 1.25rem;
     font-weight: 700;
     color: #0056b3;
-    /* 深藍色 */
-    /* 處理長文字換行 */
     word-break: break-word;
 }
 
-/* 處理「圖表說明」區塊的 <p> (舊樣式被移除了) */
 .info-card p {
     line-height: 1.7;
     margin: 1rem 0 0 0;
@@ -342,11 +304,8 @@
     display: flex;
     justify-content: center;
     gap: 0.75rem;
-    /* 12px */
     margin-bottom: 1.5rem;
-    /* 24px */
     flex-wrap: wrap;
-    /* 手機換行 */
 }
 
 .chart-filter-btn {
@@ -365,7 +324,6 @@
     background-color: #e6f2ff;
 }
 
-/* 按鈕被選中時的樣式 */
 .chart-filter-btn.active {
     background-color: #007bff;
     color: #ffffff;
@@ -374,13 +332,9 @@
 
 @media (max-width: 768px) {
     .info-grid {
-        /* 在手機上，強制變為單欄 (由上而下)
-          (雖然 auto-fit 在空間不足時也會這樣做，但明確定義更保險)
-        */
         grid-template-columns: 1fr;
     }
 
-    /* 在手機上讓 5 欄的模型資訊區塊也變成單欄 */
     #model-info-list.info-grid {
         grid-template-columns: 1fr;
     }
