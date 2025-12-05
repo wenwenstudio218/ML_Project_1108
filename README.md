@@ -23,7 +23,7 @@
 
 * **輸入介面：** 使用者可透過控制滑桿或表單系統，輸入勞工壓力特徵數值。
 * **預測結果：** 系統即時計算該勞工離職傾向機率或分類結果。
-* **[👉 點擊查看 Live Demo](https://ml-project-turnover-intention.onrender.com/){target="_blank"}**
+* **[👉 點擊查看 Live Demo https://ml-project-turnover-intention.onrender.com/]**
 
 ---
 
