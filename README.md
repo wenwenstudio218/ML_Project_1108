@@ -64,9 +64,9 @@
 * **AUC Score:** 0.79
 * **Recall (召回率):** 0.83 (本專案最重視的指標，寧可誤判也不要漏抓潛在離職者)
 
-[👉 點擊查看「邏輯斯迴歸」模型訓練過程](./models/logistic_model_train.ipynb)
-[👉 點擊查看「隨機森林」模型訓練過程](./models/rf_model_train.ipynb)
-六都&北北桃模型 ROC曲線圖比較
+[👉 點擊查看「邏輯斯迴歸」模型訓練過程](./models/logistic_model_train.ipynb)  
+[👉 點擊查看「隨機森林」模型訓練過程](./models/rf_model_train.ipynb)  
+六都&北北桃模型 ROC曲線圖比較：  
 ![ROC曲線與AUC分數比較圖](./images/roc-auc-score.png)
 
 ---
